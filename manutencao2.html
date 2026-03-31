@@ -25,31 +25,13 @@
             animation: pulse 2s infinite;
         }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
-        /* Overlay para mobile quando sidebar aberta */
-        #sidebarOverlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 40;
-        }
-        #sidebarOverlay.active { display: block; }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
-    <!-- Overlay para mobile -->
-    <div id="sidebarOverlay" onclick="toggleSidebar()"></div>
-    
     <div id="app" class="flex">
         <!-- Sidebar -->
-        <aside id="sidebar" class="w-64 gradient-bg text-white min-h-screen fixed left-0 top-0 z-50 
-                                   transform -translate-x-full md:translate-x-0 transition-transform duration-300">
+        <aside class="w-64 gradient-bg text-white min-h-screen fixed left-0 top-0 z-50">
             <div class="p-6">
-                <!-- Botão fechar sidebar (mobile) -->
-                <button onclick="toggleSidebar()" class="md:hidden absolute top-4 right-4 text-white/80 hover:text-white">
-                    <i class="ri-close-line text-2xl"></i>
-                </button>
-                
                 <div class="flex items-center gap-3 mb-8">
                     <img src="https://image.qwenlm.ai/public_source/11a3a385-f238-4ed8-a09b-655b1184a948/18ee4fc73-60b1-4e11-9bc8-5c78dd2edf59.png" alt="Logo" class="w-12 h-12">
                     <div>
@@ -66,23 +48,23 @@
                 </div>
                 
                 <nav class="space-y-2">
-                    <a href="#" class="sidebar-link active flex items-center gap-3 px-4 py-3 rounded-lg" onclick="showPage('dashboard', this); toggleSidebar()">
+                    <a href="#" class="sidebar-link active flex items-center gap-3 px-4 py-3 rounded-lg" onclick="showPage('dashboard', this)">
                         <i class="ri-dashboard-line text-xl"></i>
                         <span>Dashboard</span>
                     </a>
-                    <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg" onclick="showPage('tickets', this); toggleSidebar()">
+                    <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg" onclick="showPage('tickets', this)">
                         <i class="ri-ticket-line text-xl"></i>
                         <span>Tickets</span>
                     </a>
-                    <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg" onclick="showPage('categorias', this); toggleSidebar()">
+                    <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg" onclick="showPage('categorias', this)">
                         <i class="ri-folder-category-line text-xl"></i>
                         <span>Categorias</span>
                     </a>
-                    <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg" onclick="showPage('relatorios', this); toggleSidebar()">
+                    <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg" onclick="showPage('relatorios', this)">
                         <i class="ri-bar-chart-line text-xl"></i>
                         <span>Relatórios</span>
                     </a>
-                    <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg" onclick="showPage('config', this); toggleSidebar()">
+                    <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg" onclick="showPage('config', this)">
                         <i class="ri-settings-4-line text-xl"></i>
                         <span>Configurações</span>
                     </a>
@@ -101,20 +83,14 @@
         </aside>
 
         <!-- Main Content -->
-        <main class="ml-0 md:ml-64 flex-1 p-4 md:p-8">
+        <main class="ml-64 flex-1 p-8">
             <!-- Header -->
-            <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 md:mb-8">
-                <div class="flex items-center gap-3">
-                    <!-- Botão menu mobile -->
-                    <button onclick="toggleSidebar()" class="md:hidden text-gray-700 p-2 hover:bg-gray-100 rounded-lg">
-                        <i class="ri-menu-line text-2xl"></i>
-                    </button>
-                    <div>
-                        <h2 class="text-xl md:text-2xl font-bold text-gray-800" id="pageTitle">Dashboard</h2>
-                        <p class="text-sm md:text-base text-gray-500">Unidade: CASA DOS CRIATIVOS | GRUPO SOMA</p>
-                    </div>
+            <header class="flex justify-between items-center mb-8">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800" id="pageTitle">Dashboard</h2>
+                    <p class="text-gray-500">Unidade: CASA DOS CRIATIVOS | GRUPO SOMA</p>
                 </div>
-                <button onclick="openModal('ticketModal')" class="gradient-bg text-white px-4 md:px-6 py-2 md:py-3 rounded-lg flex items-center gap-2 hover:opacity-90 transition text-sm md:text-base w-full sm:w-auto justify-center">
+                <button onclick="openModal('ticketModal')" class="gradient-bg text-white px-6 py-3 rounded-lg flex items-center gap-2 hover:opacity-90 transition">
                     <i class="ri-add-line"></i>
                     <span>Novo Ticket</span>
                 </button>
@@ -123,69 +99,70 @@
             <!-- Dashboard Page -->
             <div id="dashboardPage" class="page">
                 <!-- Stats Cards -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
-                    <div class="bg-white rounded-xl p-4 md:p-6 card-hover shadow-sm">
+                <div class="grid grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white rounded-xl p-6 card-hover shadow-sm">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="w-10 h-10 md:w-12 md:h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                                <i class="ri-ticket-fill text-xl md:text-2xl text-blue-600"></i>
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <i class="ri-ticket-fill text-2xl text-blue-600"></i>
                             </div>
-                            <span class="text-2xl md:text-3xl font-bold text-gray-800" id="totalTickets">0</span>
+                            <span class="text-3xl font-bold text-gray-800" id="totalTickets">0</span>
                         </div>
-                        <p class="text-sm md:text-base text-gray-500">Total de Tickets</p>
+                        <p class="text-gray-500">Total de Tickets</p>
                     </div>
-                    <div class="bg-white rounded-xl p-4 md:p-6 card-hover shadow-sm">
+                    <div class="bg-white rounded-xl p-6 card-hover shadow-sm">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="w-10 h-10 md:w-12 md:h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                                <i class="ri-time-fill text-xl md:text-2xl text-yellow-600"></i>
+                            <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                <i class="ri-time-fill text-2xl text-yellow-600"></i>
                             </div>
-                            <span class="text-2xl md:text-3xl font-bold text-gray-800" id="pendingTickets">0</span>
+                            <span class="text-3xl font-bold text-gray-800" id="pendingTickets">0</span>
                         </div>
-                        <p class="text-sm md:text-base text-gray-500">Pendentes</p>
+                        <p class="text-gray-500">Pendentes</p>
                     </div>
-                    <div class="bg-white rounded-xl p-4 md:p-6 card-hover shadow-sm">
+                    <div class="bg-white rounded-xl p-6 card-hover shadow-sm">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="w-10 h-10 md:w-12 md:h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                                <i class="ri-loader-4-fill text-xl md:text-2xl text-blue-600"></i>
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <i class="ri-loader-4-fill text-2xl text-blue-600"></i>
                             </div>
-                            <span class="text-2xl md:text-3xl font-bold text-gray-800" id="progressTickets">0</span>
+                            <span class="text-3xl font-bold text-gray-800" id="progressTickets">0</span>
                         </div>
-                        <p class="text-sm md:text-base text-gray-500">Em Andamento</p>
+                        <p class="text-gray-500">Em Andamento</p>
                     </div>
-                    <div class="bg-white rounded-xl p-4 md:p-6 card-hover shadow-sm">
+                    <div class="bg-white rounded-xl p-6 card-hover shadow-sm">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="w-10 h-10 md:w-12 md:h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                                <i class="ri-checkbox-circle-fill text-xl md:text-2xl text-green-600"></i>
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                <i class="ri-checkbox-circle-fill text-2xl text-green-600"></i>
                             </div>
-                            <span class="text-2xl md:text-3xl font-bold text-gray-800" id="completedTickets">0</span>
+                            <span class="text-3xl font-bold text-gray-800" id="completedTickets">0</span>
                         </div>
-                        <p class="text-sm md:text-base text-gray-500">Concluídos</p>
+                        <p class="text-gray-500">Concluídos</p>
                     </div>
                 </div>
 
                 <!-- Recent Tickets & Categories -->
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
-                    <div class="lg:col-span-2 bg-white rounded-xl shadow-sm p-4 md:p-6">
-                        <div class="flex justify-between items-center mb-4 md:mb-6">
-                            <h3 class="text-base md:text-lg font-semibold text-gray-800">Tickets Recentes</h3>
+                <div class="grid grid-cols-3 gap-6">
+                    <div class="col-span-2 bg-white rounded-xl shadow-sm p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-lg font-semibold text-gray-800">Tickets Recentes</h3>
                             <a href="#" onclick="showPage('tickets', document.querySelectorAll('.sidebar-link')[1])" class="text-blue-600 hover:underline text-sm">Ver todos</a>
                         </div>
-                        <div id="recentTickets" class="space-y-3 md:space-y-4"></div>
+                        <div id="recentTickets" class="space-y-4"></div>
                     </div>
                     
-                    <div class="bg-white rounded-xl shadow-sm p-4 md:p-6">
-                        <h3 class="text-base md:text-lg font-semibold text-gray-800 mb-4 md:mb-6">Categorias</h3>
-                        <div id="categoryList" class="space-y-2 md:space-y-3"></div>
+                    <div class="bg-white rounded-xl shadow-sm p-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-6">Categorias</h3>
+                        <div id="categoryList" class="space-y-3"></div>
                     </div>
                 </div>
 
                 <!-- Banner -->
-                <div class="mt-6 md:mt-8 bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl p-4 md:p-8 text-white flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <div class="text-center sm:text-left">
-                        <h3 class="text-lg md:text-2xl font-bold mb-2">Precisa de ajuda com manutenção?</h3>
-                        <p class="text-sm md:text-base text-blue-100">Abra um novo ticket e nossa equipe irá atendê-lo em breve.</p>
+                <div class="mt-8 bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl p-8 text-white flex items-center justify-between">
+                    <div>
+                        <h3 class="text-2xl font-bold mb-2">Precisa de ajuda com manutenção?</h3>
+                        <p class="text-blue-100">Abra um novo ticket e nossa equipe irá atendê-lo em breve.</p>
                     </div>
-                    <div class="w-24 h-24 md:w-32 md:h-32 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
-                        <img src="https://image.qwenlm.ai/public_source/11a3a385-f238-4ed8-a09b-655b1184a948/436467f34-f2c2-4be0-8563-ff7ce8a2af404862.png" alt="Mulher da Manutenção" class="w-24 h-24 md:w-32 md:h-32 object-contain">
+                    <!-- Mulher da Manutenção -->
+                    <div class="w-32 h-32 bg-white/20 rounded-full flex items-center justify-center">
+                        <img src="https://image.qwenlm.ai/public_source/11a3a385-f238-4ed8-a09b-655b1184a948/436467f34-f2c2-4be0-8563-ff7ce8a2af404862.png" alt="Mulher da Manutenção" class="w-32 h-32 object-contain">
                     </div>
                 </div>
             </div>
@@ -193,18 +170,18 @@
             <!-- Tickets Page -->
             <div id="ticketsPage" class="page hidden">
                 <!-- Filters -->
-                <div class="bg-white rounded-xl shadow-sm p-4 md:p-6 mb-4 md:mb-6">
-                    <div class="flex flex-col sm:flex-row gap-3 md:gap-4">
-                        <div class="flex-1 min-w-0">
+                <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+                    <div class="flex gap-4 flex-wrap">
+                        <div class="flex-1 min-w-48">
                             <label class="block text-sm text-gray-600 mb-2">Buscar</label>
                             <div class="relative">
                                 <i class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                                <input type="text" id="searchInput" placeholder="Buscar por assunto..." class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 text-sm md:text-base">
+                                <input type="text" id="searchInput" placeholder="Buscar por assunto..." class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500">
                             </div>
                         </div>
-                        <div class="w-full sm:w-40 md:w-48">
+                        <div class="w-48">
                             <label class="block text-sm text-gray-600 mb-2">Classificação</label>
-                            <select id="filterClassification" class="w-full px-3 md:px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 text-sm md:text-base">
+                            <select id="filterClassification" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500">
                                 <option value="">Todas</option>
                                 <option value="Consertos">Consertos</option>
                                 <option value="Instalação">Instalação</option>
@@ -213,9 +190,9 @@
                                 <option value="Instalação de Luminária">Instalação de Luminária</option>
                             </select>
                         </div>
-                        <div class="w-full sm:w-40 md:w-48">
+                        <div class="w-48">
                             <label class="block text-sm text-gray-600 mb-2">Status</label>
-                            <select id="filterStatus" class="w-full px-3 md:px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 text-sm md:text-base">
+                            <select id="filterStatus" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500">
                                 <option value="">Todos</option>
                                 <option value="pendente">Pendente</option>
                                 <option value="em-andamento">Em Andamento</option>
@@ -228,15 +205,15 @@
                 <!-- Tickets List -->
                 <div class="bg-white rounded-xl shadow-sm overflow-hidden">
                     <div class="overflow-x-auto">
-                        <table class="w-full min-w-[600px]">
+                        <table class="w-full">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th class="px-4 md:px-6 py-3 md:py-4 text-left text-xs md:text-sm font-semibold text-gray-600">Data</th>
-                                    <th class="px-4 md:px-6 py-3 md:py-4 text-left text-xs md:text-sm font-semibold text-gray-600">Classificação</th>
-                                    <th class="px-4 md:px-6 py-3 md:py-4 text-left text-xs md:text-sm font-semibold text-gray-600">Assunto/Serviço</th>
-                                    <th class="px-4 md:px-6 py-3 md:py-4 text-left text-xs md:text-sm font-semibold text-gray-600">Itens</th>
-                                    <th class="px-4 md:px-6 py-3 md:py-4 text-left text-xs md:text-sm font-semibold text-gray-600">Status</th>
-                                    <th class="px-4 md:px-6 py-3 md:py-4 text-left text-xs md:text-sm font-semibold text-gray-600">Ações</th>
+                                    <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Data</th>
+                                    <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Classificação</th>
+                                    <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Assunto/Serviço</th>
+                                    <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Itens</th>
+                                    <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Status</th>
+                                    <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Ações</th>
                                 </tr>
                             </thead>
                             <tbody id="ticketsTable" class="divide-y divide-gray-100"></tbody>
@@ -247,40 +224,40 @@
 
             <!-- Categories Page -->
             <div id="categoriasPage" class="page hidden">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6" id="categoriesGrid"></div>
+                <div class="grid grid-cols-2 gap-6" id="categoriesGrid"></div>
             </div>
 
             <!-- Reports Page -->
             <div id="relatoriosPage" class="page hidden">
-                <div class="bg-white rounded-xl shadow-sm p-4 md:p-6 mb-4 md:mb-6">
-                    <h3 class="text-base md:text-lg font-semibold text-gray-800 mb-4 md:mb-6">Estatísticas por Categoria</h3>
-                    <div id="categoryStats" class="space-y-3 md:space-y-4"></div>
+                <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-6">Estatísticas por Categoria</h3>
+                    <div id="categoryStats" class="space-y-4"></div>
                 </div>
-                <div class="bg-white rounded-xl shadow-sm p-4 md:p-6">
-                    <h3 class="text-base md:text-lg font-semibold text-gray-800 mb-4 md:mb-6">Tickets por Mês</h3>
-                    <div id="monthlyStats" class="space-y-3 md:space-y-4"></div>
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-6">Tickets por Mês</h3>
+                    <div id="monthlyStats" class="space-y-4"></div>
                 </div>
             </div>
 
             <!-- Config Page -->
             <div id="configPage" class="page hidden">
-                <div class="bg-white rounded-xl shadow-sm p-4 md:p-6 max-w-full md:max-w-2xl">
-                    <h3 class="text-base md:text-lg font-semibold text-gray-800 mb-4 md:mb-6">Configurações da Unidade</h3>
-                    <div class="space-y-3 md:space-y-4">
+                <div class="bg-white rounded-xl shadow-sm p-6 max-w-2xl">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-6">Configurações da Unidade</h3>
+                    <div class="space-y-4">
                         <div>
                             <label class="block text-sm text-gray-600 mb-2">Unidade de Manutenção</label>
-                            <input type="text" value="CASA DOS CRIATIVOS" class="w-full px-3 md:px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 text-sm md:text-base">
+                            <input type="text" value="CASA DOS CRIATIVOS" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500">
                         </div>
                         <div>
                             <label class="block text-sm text-gray-600 mb-2">Marca/Grupo</label>
-                            <input type="text" value="GRUPO SOMA" class="w-full px-3 md:px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 text-sm md:text-base">
+                            <input type="text" value="GRUPO SOMA" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500">
                         </div>
                         <div>
                             <label class="block text-sm text-gray-600 mb-2">Solicitante Principal</label>
-                            <input type="text" value="Karen Klein" class="w-full px-3 md:px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 text-sm md:text-base">
+                            <input type="text" value="Karen Klein" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500">
                         </div>
-                        <div class="pt-2 md:pt-4">
-                            <button class="gradient-bg text-white px-4 md:px-6 py-2 rounded-lg hover:opacity-90 transition text-sm md:text-base w-full sm:w-auto">Salvar Configurações</button>
+                        <div class="pt-4">
+                            <button class="gradient-bg text-white px-6 py-2 rounded-lg hover:opacity-90 transition">Salvar Configurações</button>
                         </div>
                     </div>
                 </div>
@@ -289,33 +266,33 @@
     </div>
 
     <!-- Footer Brand -->
-    <footer class="ml-0 md:ml-64 p-4 text-center text-gray-400 text-xs md:text-sm">
+    <footer class="ml-64 p-4 text-center text-gray-400 text-sm">
         <p>Desenvolvido por <span class="text-purple-600 font-semibold">Bianca Scoffano</span> © 2026 - Sistema de Gestão de Manutenção</p>
     </footer>
 
     <!-- New Ticket Modal -->
     <div id="ticketModal" class="modal-overlay fixed inset-0 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-fade-in mx-2 md:mx-0">
-            <div class="p-4 md:p-6 border-b border-gray-100 flex justify-between items-center">
-                <h3 class="text-lg md:text-xl font-bold text-gray-800">Novo Ticket de Manutenção</h3>
+        <div class="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-fade-in">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-gray-800">Novo Ticket de Manutenção</h3>
                 <button onclick="closeModal('ticketModal')" class="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center">
                     <i class="ri-close-line text-xl"></i>
                 </button>
             </div>
-            <div class="p-4 md:p-6 space-y-3 md:space-y-4">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+            <div class="p-6 space-y-4">
+                <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm text-gray-600 mb-2">Data *</label>
-                        <input type="date" id="ticketDate" class="w-full px-3 md:px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 text-sm md:text-base">
+                        <input type="date" id="ticketDate" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500">
                     </div>
                     <div>
                         <label class="block text-sm text-gray-600 mb-2">Solicitante</label>
-                        <input type="text" id="ticketRequester" value="Karen Klein" class="w-full px-3 md:px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 text-sm md:text-base">
+                        <input type="text" id="ticketRequester" value="Karen Klein" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500">
                     </div>
                 </div>
                 <div>
                     <label class="block text-sm text-gray-600 mb-2">Classificação *</label>
-                    <select id="ticketClassification" class="w-full px-3 md:px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 text-sm md:text-base" onchange="updateSubcategories()">
+                    <select id="ticketClassification" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500" onchange="updateSubcategories()">
                         <option value="">Selecione...</option>
                         <option value="Consertos">Consertos</option>
                         <option value="Instalação">Instalação</option>
@@ -329,21 +306,21 @@
                 </div>
                 <div>
                     <label class="block text-sm text-gray-600 mb-2">Subcategoria</label>
-                    <select id="ticketSubcategory" class="w-full px-3 md:px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 text-sm md:text-base">
+                    <select id="ticketSubcategory" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500">
                         <option value="">Selecione uma classificação primeiro</option>
                     </select>
                 </div>
                 <div>
                     <label class="block text-sm text-gray-600 mb-2">Assunto/Serviço Realizado *</label>
-                    <input type="text" id="ticketSubject" placeholder="Descreva o serviço necessário..." class="w-full px-3 md:px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 text-sm md:text-base">
+                    <input type="text" id="ticketSubject" placeholder="Descreva o serviço necessário..." class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500">
                 </div>
                 <div>
                     <label class="block text-sm text-gray-600 mb-2">Itens de Classificação</label>
-                    <input type="text" id="ticketItems" placeholder="Ex: Recepção, Diretoria, Banheiro..." class="w-full px-3 md:px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 text-sm md:text-base">
+                    <input type="text" id="ticketItems" placeholder="Ex: Recepção, Diretoria, Banheiro..." class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500">
                 </div>
                 <div>
                     <label class="block text-sm text-gray-600 mb-2">Prioridade</label>
-                    <div class="flex flex-wrap gap-3 md:gap-4">
+                    <div class="flex gap-4">
                         <label class="flex items-center gap-2 cursor-pointer">
                             <input type="radio" name="priority" value="baixa" class="text-blue-600">
                             <span class="text-sm">Baixa</span>
@@ -359,26 +336,26 @@
                     </div>
                 </div>
             </div>
-            <div class="p-4 md:p-6 border-t border-gray-100 flex flex-col sm:flex-row justify-end gap-3">
-                <button onclick="closeModal('ticketModal')" class="px-4 md:px-6 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition text-sm md:text-base">Cancelar</button>
-                <button onclick="saveTicket()" class="gradient-bg text-white px-4 md:px-6 py-2 rounded-lg hover:opacity-90 transition text-sm md:text-base">Criar Ticket</button>
+            <div class="p-6 border-t border-gray-100 flex justify-end gap-3">
+                <button onclick="closeModal('ticketModal')" class="px-6 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition">Cancelar</button>
+                <button onclick="saveTicket()" class="gradient-bg text-white px-6 py-2 rounded-lg hover:opacity-90 transition">Criar Ticket</button>
             </div>
         </div>
     </div>
 
     <!-- Ticket Detail Modal -->
     <div id="detailModal" class="modal-overlay fixed inset-0 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl w-full max-w-lg animate-fade-in mx-2 md:mx-0">
-            <div class="p-4 md:p-6 border-b border-gray-100 flex justify-between items-center">
-                <h3 class="text-lg md:text-xl font-bold text-gray-800">Detalhes do Ticket</h3>
+        <div class="bg-white rounded-2xl w-full max-w-lg animate-fade-in">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-gray-800">Detalhes do Ticket</h3>
                 <button onclick="closeModal('detailModal')" class="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center">
                     <i class="ri-close-line text-xl"></i>
                 </button>
             </div>
-            <div class="p-4 md:p-6 space-y-3 md:space-y-4" id="ticketDetailContent"></div>
-            <div class="p-4 md:p-6 border-t border-gray-100 flex flex-col sm:flex-row justify-end gap-3">
-                <button onclick="closeModal('detailModal')" class="px-4 md:px-6 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition text-sm md:text-base">Fechar</button>
-                <button onclick="updateTicketStatus()" class="gradient-bg text-white px-4 md:px-6 py-2 rounded-lg hover:opacity-90 transition text-sm md:text-base">Atualizar Status</button>
+            <div class="p-6 space-y-4" id="ticketDetailContent"></div>
+            <div class="p-6 border-t border-gray-100 flex justify-end gap-3">
+                <button onclick="closeModal('detailModal')" class="px-6 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition">Fechar</button>
+                <button onclick="updateTicketStatus()" class="gradient-bg text-white px-6 py-2 rounded-lg hover:opacity-90 transition">Atualizar Status</button>
             </div>
         </div>
     </div>
@@ -420,14 +397,6 @@
             document.getElementById('ticketDate').valueAsDate = new Date();
         });
 
-        // Toggle sidebar no mobile
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-            sidebar.classList.toggle('-translate-x-full');
-            overlay.classList.toggle('active');
-        }
-
         function showPage(pageName, element) {
             document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
             document.getElementById(pageName + 'Page').classList.remove('hidden');
@@ -462,17 +431,17 @@
 
             const recentContainer = document.getElementById('recentTickets');
             recentContainer.innerHTML = tickets.slice(-5).reverse().map(t => `
-                <div class="flex items-center justify-between p-3 md:p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition cursor-pointer" onclick="showTicketDetail(${t.id})">
-                    <div class="flex items-center gap-2 md:gap-3">
-                        <div class="w-8 h-8 md:w-10 md:h-10 rounded-lg flex items-center justify-center ${getClassColor(t.classification)}">
-                            <i class="ri-tools-fill text-white text-sm md:text-base"></i>
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition cursor-pointer" onclick="showTicketDetail(${t.id})">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center ${getClassColor(t.classification)}">
+                            <i class="ri-tools-fill text-white"></i>
                         </div>
                         <div>
-                            <p class="font-medium text-gray-800 text-sm md:text-base">${t.subject}</p>
-                            <p class="text-xs md:text-sm text-gray-500">${t.classification} • ${formatDate(t.date)}</p>
+                            <p class="font-medium text-gray-800">${t.subject}</p>
+                            <p class="text-sm text-gray-500">${t.classification} • ${formatDate(t.date)}</p>
                         </div>
                     </div>
-                    <span class="px-2 md:px-3 py-1 rounded-full text-xs font-medium ${getStatusClass(t.status)}">${getStatusText(t.status)}</span>
+                    <span class="px-3 py-1 rounded-full text-xs font-medium ${getStatusClass(t.status)}">${getStatusText(t.status)}</span>
                 </div>
             `).join('');
 
@@ -480,8 +449,8 @@
             const categoryCounts = {};
             tickets.forEach(t => { categoryCounts[t.classification] = (categoryCounts[t.classification] || 0) + 1; });
             categoryContainer.innerHTML = Object.entries(categoryCounts).map(([cat, count]) => `
-                <div class="flex items-center justify-between p-2 md:p-3 bg-gray-50 rounded-lg">
-                    <span class="text-xs md:text-sm text-gray-700">${cat}</span>
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <span class="text-sm text-gray-700">${cat}</span>
                     <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium">${count}</span>
                 </div>
             `).join('');
@@ -499,13 +468,13 @@
             });
             document.getElementById('ticketsTable').innerHTML = filtered.map(t => `
                 <tr class="hover:bg-gray-50 transition">
-                    <td class="px-4 md:px-6 py-3 md:py-4 text-xs md:text-sm text-gray-600">${formatDate(t.date)}</td>
-                    <td class="px-4 md:px-6 py-3 md:py-4"><span class="px-2 md:px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">${t.classification}</span></td>
-                    <td class="px-4 md:px-6 py-3 md:py-4 text-xs md:text-sm text-gray-800 font-medium">${t.subject}</td>
-                    <td class="px-4 md:px-6 py-3 md:py-4 text-xs md:text-sm text-gray-600">${t.items}</td>
-                    <td class="px-4 md:px-6 py-3 md:py-4"><span class="px-2 md:px-3 py-1 rounded-full text-xs font-medium ${getStatusClass(t.status)}">${getStatusText(t.status)}</span></td>
-                    <td class="px-4 md:px-6 py-3 md:py-4">
-                        <button onclick="showTicketDetail(${t.id})" class="text-blue-600 hover:text-blue-800 mr-2 md:mr-3"><i class="ri-eye-line"></i></button>
+                    <td class="px-6 py-4 text-sm text-gray-600">${formatDate(t.date)}</td>
+                    <td class="px-6 py-4"><span class="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">${t.classification}</span></td>
+                    <td class="px-6 py-4 text-sm text-gray-800 font-medium">${t.subject}</td>
+                    <td class="px-6 py-4 text-sm text-gray-600">${t.items}</td>
+                    <td class="px-6 py-4"><span class="px-3 py-1 rounded-full text-xs font-medium ${getStatusClass(t.status)}">${getStatusText(t.status)}</span></td>
+                    <td class="px-6 py-4">
+                        <button onclick="showTicketDetail(${t.id})" class="text-blue-600 hover:text-blue-800 mr-3"><i class="ri-eye-line"></i></button>
                         <button onclick="editTicket(${t.id})" class="text-gray-600 hover:text-gray-800"><i class="ri-edit-line"></i></button>
                     </td>
                 </tr>
@@ -515,14 +484,14 @@
         function renderCategories() {
             const container = document.getElementById('categoriesGrid');
             container.innerHTML = Object.entries(categories).map(([cat, subs]) => `
-                <div class="bg-white rounded-xl shadow-sm p-4 md:p-6 card-hover">
-                    <div class="flex items-center gap-2 md:gap-3 mb-3 md:mb-4">
-                        <div class="w-8 h-8 md:w-10 md:h-10 rounded-lg flex items-center justify-center ${getClassColor(cat)}">
-                            <i class="ri-folder-category-fill text-white text-sm md:text-base"></i>
+                <div class="bg-white rounded-xl shadow-sm p-6 card-hover">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center ${getClassColor(cat)}">
+                            <i class="ri-folder-category-fill text-white"></i>
                         </div>
-                        <h4 class="font-semibold text-gray-800 text-sm md:text-base">${cat}</h4>
+                        <h4 class="font-semibold text-gray-800">${cat}</h4>
                     </div>
-                    <div class="flex flex-wrap gap-1 md:gap-2">
+                    <div class="flex flex-wrap gap-2">
                         ${subs.map(s => `<span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs">${s}</span>`).join('')}
                     </div>
                 </div>
@@ -540,20 +509,20 @@
             const maxCat = Math.max(...Object.values(categoryCounts));
             document.getElementById('categoryStats').innerHTML = Object.entries(categoryCounts).map(([cat, count]) => `
                 <div>
-                    <div class="flex justify-between text-xs md:text-sm mb-1">
+                    <div class="flex justify-between text-sm mb-1">
                         <span class="text-gray-700">${cat}</span>
                         <span class="text-gray-500">${count} tickets</span>
                     </div>
-                    <div class="h-2 md:h-3 bg-gray-100 rounded-full overflow-hidden">
+                    <div class="h-3 bg-gray-100 rounded-full overflow-hidden">
                         <div class="h-full gradient-bg rounded-full" style="width: ${(count / maxCat) * 100}%"></div>
                     </div>
                 </div>
             `).join('');
             document.getElementById('monthlyStats').innerHTML = Object.entries(monthlyCounts).map(([month, count]) => `
-                <div class="flex items-center gap-2 md:gap-4">
-                    <div class="w-16 md:w-24 text-xs md:text-sm text-gray-600">${formatMonth(month)}</div>
-                    <div class="flex-1 h-6 md:h-8 bg-gray-100 rounded-lg overflow-hidden flex items-center">
-                        <div class="h-full gradient-bg flex items-center justify-center text-white text-xs md:text-sm font-medium" style="width: ${(count / Math.max(...Object.values(monthlyCounts))) * 100}%">${count}</div>
+                <div class="flex items-center gap-4">
+                    <div class="w-24 text-sm text-gray-600">${formatMonth(month)}</div>
+                    <div class="flex-1 h-8 bg-gray-100 rounded-lg overflow-hidden flex items-center">
+                        <div class="h-full gradient-bg flex items-center justify-center text-white text-sm font-medium" style="width: ${(count / Math.max(...Object.values(monthlyCounts))) * 100}%">${count}</div>
                     </div>
                 </div>
             `).join('');
@@ -564,23 +533,23 @@
             const ticket = tickets.find(t => t.id === id);
             if(!ticket) return;
             document.getElementById('ticketDetailContent').innerHTML = `
-                <div class="space-y-3 md:space-y-4">
+                <div class="space-y-4">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 md:w-12 md:h-12 rounded-lg flex items-center justify-center ${getClassColor(ticket.classification)}">
-                            <i class="ri-ticket-fill text-white text-base md:text-xl"></i>
+                        <div class="w-12 h-12 rounded-lg flex items-center justify-center ${getClassColor(ticket.classification)}">
+                            <i class="ri-ticket-fill text-white text-xl"></i>
                         </div>
                         <div>
-                            <p class="font-semibold text-gray-800 text-sm md:text-base">${ticket.subject}</p>
-                            <p class="text-xs md:text-sm text-gray-500">Ticket #${ticket.id}</p>
+                            <p class="font-semibold text-gray-800">${ticket.subject}</p>
+                            <p class="text-sm text-gray-500">Ticket #${ticket.id}</p>
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-3 md:gap-4 pt-3 md:pt-4 border-t">
-                        <div><p class="text-xs text-gray-500 mb-1">Data</p><p class="font-medium text-sm md:text-base">${formatDate(ticket.date)}</p></div>
-                        <div><p class="text-xs text-gray-500 mb-1">Status</p><span class="px-2 md:px-3 py-1 rounded-full text-xs font-medium ${getStatusClass(ticket.status)}">${getStatusText(ticket.status)}</span></div>
-                        <div><p class="text-xs text-gray-500 mb-1">Classificação</p><p class="font-medium text-sm md:text-base">${ticket.classification}</p></div>
-                        <div><p class="text-xs text-gray-500 mb-1">Solicitante</p><p class="font-medium text-sm md:text-base">Karen Klein</p></div>
+                    <div class="grid grid-cols-2 gap-4 pt-4 border-t">
+                        <div><p class="text-xs text-gray-500 mb-1">Data</p><p class="font-medium">${formatDate(ticket.date)}</p></div>
+                        <div><p class="text-xs text-gray-500 mb-1">Status</p><span class="px-3 py-1 rounded-full text-xs font-medium ${getStatusClass(ticket.status)}">${getStatusText(ticket.status)}</span></div>
+                        <div><p class="text-xs text-gray-500 mb-1">Classificação</p><p class="font-medium">${ticket.classification}</p></div>
+                        <div><p class="text-xs text-gray-500 mb-1">Solicitante</p><p class="font-medium">Karen Klein</p></div>
                     </div>
-                    <div class="pt-3 md:pt-4 border-t"><p class="text-xs text-gray-500 mb-1">Itens de Classificação</p><p class="font-medium text-sm md:text-base">${ticket.items}</p></div>
+                    <div class="pt-4 border-t"><p class="text-xs text-gray-500 mb-1">Itens de Classificação</p><p class="font-medium">${ticket.items}</p></div>
                 </div>
             `;
             openModal('detailModal');
