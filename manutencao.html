@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CASA DOS CRIATIVOS - Gestão de Manutenção</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.0/index.css" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 50%, #3d7ab5 100%);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        .status-pendente { background: #fef3c7; color: #92400e; }
+        .status-em-andamento { background: #dbeafe; color: #1e40af; }
+        .status-concluido { background: #d1fae5; color: #065f46; }
+        .modal-overlay {
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .sidebar-link {
+            transition: all 0.2s ease;
+        }
+        .sidebar-link:hover, .sidebar-link.active {
+            background: rgba(255,255,255,0.15);
+            border-left: 3px solid #60a5fa;
+        }
+        .ticket-card {
+            border-left: 4px solid;
+        }
+        .ticket-consertos { border-left-color: #3b82f6; }
+        .ticket-instalacao { border-left-color: #10b981; }
+        .ticket-hidraulica { border-left-color: #f59e0b; }
+        .ticket-lampadas { border-left-color: #8b5cf6; }
+        .ticket-limpeza { border-left-color: #ec4899; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div id="app" class="flex">
+        <!-- Sidebar -->
+        <aside class="w-64 gradient-bg text-white min-h-screen fixed left-0 top-0 z-50">
+            <div class="p-6">
+                <div class="flex items-center gap-3 mb-8">
+                    <img src="https://image.qwenlm.ai/public_source/11a3a385-f238-4ed8-a09b-655b1184a948/18ee4fc73-60b1-4e11-9bc8-5c78dd2edf59.png" alt="Logo" class="w-12 h-12">
+                    <div>
+                        <h1 class="font-bold text-lg">CASA DOS</h1>
+                        <p class="text-sm text-blue-200">CRIATIVOS</p>
+                    </div>
+                </div>
+                
+                <nav class="space-y-2">
+                    <a href="#" class="sidebar-link active flex items-center gap-3 px-4 py-3 rounded-lg" onclick="showPage('dashboard', this)">
+                        <i class="ri-dashboard-line text-xl"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg" onclick="showPage('tickets', this)">
+                        <i class="ri-ticket-line text-xl"></i>
+                        <span>Tickets</span>
+                    </a>
+                    <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg" onclick="showPage('categorias', this)">
+                        <i class="ri-folder-category-line text-xl"></i>
+                        <span>Categorias</span>
+                    </a>
+                    <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg" onclick="showPage('relatorios', this)">
+                        <i class="ri-bar-chart-line text-xl"></i>
+                        <span>Relatórios</span>
+                    </a>
+                    <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg" onclick="showPage('config', this)">
+                        <i class="ri-settings-4-line text-xl"></i>
+                        <span>Configurações</span>
+                    </a>
+                </nav>
+                
+                <div class="mt-8 pt-8 border-t border-blue-400/30">
+                    <div class="flex items-center gap-3 px-4">
+                        <img src="https://image.qwenlm.ai/public_source/11a3a385-f238-4ed8-a09b-655b1184a948/1fc0683e7-92a3-4224-b5cf-9b2860bc03cc.png" alt="User" class="w-10 h-10 rounded-full">
+                        <div>
+                            <p class="font-medium text-sm">Karen Klein</p>
+                            <p class="text-xs text-blue-200">Solicitante</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="ml-64 flex-1 p-8">
+            <!-- Header -->
+            <header class="flex justify-between items-center mb-8">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800" id="pageTitle">Dashboard</h2>
+                    <p class="text-gray-500">Unidade: CASA DOS CRIATIVOS | GRUPO SOMA</p>
+                </div>
+                <button onclick="openModal('ticketModal')" class="gradient-bg text-white px-6 py-3 rounded-lg flex items-center gap-2 hover:opacity-90 transition">
+                    <i class="ri-add-line"></i>
+                    <span>Novo Ticket</span>
+                </button>
+            </header>
+
+            <!-- Dashboard Page -->
+            <div id="dashboardPage" class="page">
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white rounded-xl p-6 card-hover shadow-sm">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <i class="ri-ticket-fill text-2xl text-blue-600"></i>
+                            </div>
+                            <span class="text-3xl font-bold text-gray-800" id="totalTickets">0</span>
+                        </div>
+                        <p class="text-gray-500">Total de Tickets</p>
+                    </div>
+                    <div class="bg-white rounded-xl p-6 card-hover shadow-sm">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                <i class="ri-time-fill text-2xl text-yellow-600"></i>
+                            </div>
+                            <span class="text-3xl font-bold text-gray-800" id="pendingTickets">0</span>
+                        </div>
+                        <p class="text-gray-500">Pendentes</p>
+                    </div>
+                    <div class="bg-white rounded-xl p-6 card-hover shadow-sm">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <i class="ri-loader-4-fill text-2xl text-blue-600"></i>
+                            </div>
+                            <span class="text-3xl font-bold text-gray-800" id="progressTickets">0</span>
+                        </div>
+                        <p class="text-gray-500">Em Andamento</p>
+                    </div>
+                    <div class="bg-white rounded-xl p-6 card-hover shadow-sm">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                <i class="ri-checkbox-circle-fill text-2xl text-green-600"></i>
+                            </div>
+                            <span class="text-3xl font-bold text-gray-800" id="completedTickets">0</span>
+                        </div>
+                        <p class="text-gray-500">Concluídos</p>
+                    </div>
+                </div>
+
+                <!-- Recent Tickets & Categories -->
+                <div class="grid grid-cols-3 gap-6">
+                    <div class="col-span-2 bg-white rounded-xl shadow-sm p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-lg font-semibold text-gray-800">Tickets Recentes</h3>
+                            <a href="#" onclick="showPage('tickets', document.querySelectorAll('.sidebar-link')[1])" class="text-blue-600 hover:underline text-sm">Ver todos</a>
+                        </div>
+                        <div id="recentTickets" class="space-y-4"></div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow-sm p-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-6">Categorias</h3>
+                        <div id="categoryList" class="space-y-3"></div>
+                    </div>
+                </div>
+
+                <!-- Banner -->
+                <div class="mt-8 bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl p-8 text-white flex items-center justify-between">
+                    <div>
+                        <h3 class="text-2xl font-bold mb-2">Precisa de ajuda com manutenção?</h3>
+                        <p class="text-blue-100">Abra um novo ticket e nossa equipe irá atendê-lo em breve.</p>
+                    </div>
+                    <img src="https://image.qwenlm.ai/public_source/11a3a385-f238-4ed8-a09b-655b1184a948/1fc0683e7-92a3-4224-b5cf-9b2860bc03cc.png" alt="Maintenance" class="w-32 h-32">
+                </div>
+            </div>
+
+            <!-- Tickets Page -->
+            <div id="ticketsPage" class="page hidden">
+                <!-- Filters -->
+                <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+                    <div class="flex gap-4 flex-wrap">
+                        <div class="flex-1 min-w-48">
+                            <label class="block text-sm text-gray-600 mb-2">Buscar</label>
+                            <div class="relative">
+                                <i class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                <input type="text" id="searchInput" placeholder="Buscar por assunto..." class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500">
+                            </div>
+                        </div>
+                        <div class="w-48">
+                            <label class="block text-sm text-gray-600 mb-2">Classificação</label>
+                            <select id="filterClassification" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500">
+                                <option value="">Todas</option>
+                                <option value="Consertos">Consertos</option>
+                                <option value="Instalação">Instalação</option>
+                                <option value="Hidráulica">Hidráulica</option>
+                                <option value="Lâmpadas Queimadas">Lâmpadas Queimadas</option>
+                                <option value="Instalação de Luminária">Instalação de Luminária</option>
+                            </select>
+                        </div>
+                        <div class="w-48">
+                            <label class="block text-sm text-gray-600 mb-2">Status</label>
+                            <select id="filterStatus" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500">
+                                <option value="">Todos</option>
+                                <option value="pendente">Pendente</option>
+                                <option value="em-andamento">Em Andamento</option>
+                                <option value="concluido">Concluído</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tickets List -->
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Data</th>
+                                    <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Classificação</th>
+                                    <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Assunto/Serviço</th>
+                                    <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Itens</th>
+                                    <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Status</th>
+                                    <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ticketsTable" class="divide-y divide-gray-100"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categories Page -->
+            <div id="categoriasPage" class="page hidden">
+                <div class="grid grid-cols-2 gap-6" id="categoriesGrid"></div>
+            </div>
+
+            <!-- Reports Page -->
+            <div id="relatoriosPage" class="page hidden">
+                <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-6">Estatísticas por Categoria</h3>
+                    <div id="categoryStats" class="space-y-4"></div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-6">Tickets por Mês</h3>
+                    <div id="monthlyStats" class="space-y-4"></div>
+                </div>
+            </div>
+
+            <!-- Config Page -->
+            <div id="configPage" class="page hidden">
+                <div class="bg-white rounded-xl shadow-sm p-6 max-w-2xl">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-6">Configurações da Unidade</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-2">Unidade de Manutenção</label>
+                            <input type="text" value="CASA DOS CRIATIVOS" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-2">Marca/Grupo</label>
+                            <input type="text" value="GRUPO SOMA" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-2">Solicitante Principal</label>
+                            <input type="text" value="Karen Klein" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500">
+                        </div>
+                        <div class="pt-4">
+                            <button class="gradient-bg text-white px-6 py-2 rounded-lg hover:opacity-90 transition">Salvar Configurações</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- New Ticket Modal -->
+    <div id="ticketModal" class="modal-overlay fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-fade-in">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-gray-800">Novo Ticket de Manutenção</h3>
+                <button onclick="closeModal('ticketModal')" class="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center">
+                    <i class="ri-close-line text-xl"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm text-gray-600 mb-2">Data *</label>
+                        <input type="date" id="ticketDate" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-600 mb-2">Solicitante</label>
+                        <input type="text" id="ticketRequester" value="Karen Klein" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-600 mb-2">Classificação *</label>
+                    <select id="ticketClassification" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500" onchange="updateSubcategories()">
+                        <option value="">Selecione...</option>
+                        <option value="Consertos">Consertos</option>
+                        <option value="Instalação">Instalação</option>
+                        <option value="Hidráulica">Hidráulica</option>
+                        <option value="Lâmpadas Queimadas">Lâmpadas Queimadas</option>
+                        <option value="Instalação de Luminária">Instalação de Luminária</option>
+                        <option value="Serviço de Limpeza">Serviço de Limpeza</option>
+                        <option value="Serviço de Pintura">Serviço de Pintura</option>
+                        <option value="Reposição de Insumos">Reposição de Insumos</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-600 mb-2">Subcategoria</label>
+                    <select id="ticketSubcategory" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500">
+                        <option value="">Selecione uma classificação primeiro</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-600 mb-2">Assunto/Serviço Realizado *</label>
+                    <input type="text" id="ticketSubject" placeholder="Descreva o serviço necessário..." class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-600 mb-2">Itens de Classificação</label>
+                    <input type="text" id="ticketItems" placeholder="Ex: Recepção, Diretoria, Banheiro..." class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-600 mb-2">Prioridade</label>
+                    <div class="flex gap-4">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="priority" value="baixa" class="text-blue-600">
+                            <span class="text-sm">Baixa</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="priority" value="media" checked class="text-blue-600">
+                            <span class="text-sm">Média</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="priority" value="alta" class="text-blue-600">
+                            <span class="text-sm">Alta</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="p-6 border-t border-gray-100 flex justify-end gap-3">
+                <button onclick="closeModal('ticketModal')" class="px-6 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition">Cancelar</button>
+                <button onclick="saveTicket()" class="gradient-bg text-white px-6 py-2 rounded-lg hover:opacity-90 transition">Criar Ticket</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ticket Detail Modal -->
+    <div id="detailModal" class="modal-overlay fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl w-full max-w-lg animate-fade-in">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-gray-800">Detalhes do Ticket</h3>
+                <button onclick="closeModal('detailModal')" class="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center">
+                    <i class="ri-close-line text-xl"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-4" id="ticketDetailContent"></div>
+            <div class="p-6 border-t border-gray-100 flex justify-end gap-3">
+                <button onclick="closeModal('detailModal')" class="px-6 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition">Fechar</button>
+                <button onclick="updateTicketStatus()" class="gradient-bg text-white px-6 py-2 rounded-lg hover:opacity-90 transition">Atualizar Status</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data from Excel
+        const tickets = [
+            { id: 1, date: '2026-01-26', classification: 'Consertos', subject: 'Troca de fechadura de porta principal', items: 'Acesso WiseOffices', status: 'concluido' },
+            { id: 2, date: '2026-01-26', classification: 'Instalação', subject: 'Instalação de máquina de lavar roupa', items: 'Ajuste de ar condicionado - Recepção Diretoria', status: 'em-andamento' },
+            { id: 3, date: '2026-01-26', classification: 'Hidráulica', subject: 'Conserto de pia (sifão)', items: 'Recepção Diretoria', status: 'concluido' },
+            { id: 4, date: '2026-03-24', classification: 'Consertos', subject: 'Troca de filtro de bebedouro', items: 'Corretiva de ar condicionado', status: 'pendente' },
+            { id: 5, date: '2026-03-24', classification: 'Consertos', subject: 'Ajuste de tomada', items: 'Dedetização - Recepção Diretoria', status: 'em-andamento' },
+            { id: 6, date: '2026-03-24', classification: 'Lâmpadas Queimadas', subject: 'Troca de lâmpada de acervo', items: 'Elevador', status: 'concluido' },
+            { id: 7, date: '2026-03-27', classification: 'Instalação de Luminária', subject: 'Troca de bocal de luminária', items: 'Elevador PCD', status: 'pendente' },
+            { id: 8, date: '2026-03-27', classification: 'Consertos', subject: 'Ajuste de porta', items: 'Gotejamento de ar', status: 'em-andamento' }
+        ];
+
+        const categories = {
+            'Consertos': ['Corretiva', 'Assento sanitário', 'Bebedouro', 'Cadeiras', 'Compressor de Ar', 'Em geral', 'Geladeira', 'Microondas', 'Portas ou portões', 'Tomadas', 'Ventilador'],
+            'Instalação': ['Ajuste de ar condicionado', 'Quadro', 'Maçanetas', 'Torneira', 'TV', 'Montagem de arara'],
+            'Hidráulica': ['Pia entupida', 'Gotejamento', 'Torneira'],
+            'Lâmpadas Queimadas': ['Banheiro', 'Copa', 'Outros', 'Sala', 'Troca de LED'],
+            'Instalação de Luminária': ['Troca de bocal'],
+            'Serviço de Limpeza': ['Banheiro', 'Copa', 'Outros', 'Sala'],
+            'Serviço de Pintura': ['Área de convivência', 'Banheiro', 'Copa', 'Sala', 'Área comum'],
+            'Reposição de Insumos': ['Papel higiênico', 'Papel toalha', 'Sabonete líquido', 'Café'],
+            'Sistemas de Combate a Incêndio': ['Sprinkler', 'Extintor', 'Iluminação de emergência'],
+            'Solicitação de Material': ['Piloto de quadro branco', 'Canetas', 'Borracha', 'Grampo'],
+            'Problemas com Controles Remotos': ['Troca de pilhas', 'Troca de controle'],
+            'Dedetização': ['Andar', 'Banheiro', 'Copa']
+        };
+
+        let currentTicketId = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            renderDashboard();
+            renderTickets();
+            renderCategories();
+            renderReports();
+            document.getElementById('ticketDate').valueAsDate = new Date();
+        });
+
+        // Page Navigation
+        function showPage(pageName, element) {
+            document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+            document.getElementById(pageName + 'Page').classList.remove('hidden');
+            
+            document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+            if(element) element.classList.add('active');
+            
+            const titles = {
+                'dashboard': 'Dashboard',
+                'tickets': 'Tickets',
+                'categorias': 'Categorias',
+                'relatorios': 'Relatórios',
+                'config': 'Configurações'
+            };
+            document.getElementById('pageTitle').textContent = titles[pageName];
+        }
+
+        // Modal Functions
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.remove('hidden');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        // Update Subcategories
+        function updateSubcategories() {
+            const classification = document.getElementById('ticketClassification').value;
+            const subcategorySelect = document.getElementById('ticketSubcategory');
+            subcategorySelect.innerHTML = '<option value="">Selecione...</option>';
+            
+            if(classification && categories[classification]) {
+                categories[classification].forEach(sub => {
+                    const option = document.createElement('option');
+                    option.value = sub;
+                    option.textContent = sub;
+                    subcategorySelect.appendChild(option);
+                });
+            }
+        }
+
+        // Render Dashboard
+        function renderDashboard() {
+            document.getElementById('totalTickets').textContent = tickets.length;
+            document.getElementById('pendingTickets').textContent = tickets.filter(t => t.status === 'pendente').length;
+            document.getElementById('progressTickets').textContent = tickets.filter(t => t.status === 'em-andamento').length;
+            document.getElementById('completedTickets').textContent = tickets.filter(t => t.status === 'concluido').length;
+
+            // Recent Tickets
+            const recentContainer = document.getElementById('recentTickets');
+            recentContainer.innerHTML = tickets.slice(-5).reverse().map(t => `
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition cursor-pointer" onclick="showTicketDetail(${t.id})">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center ${getClassColor(t.classification)}">
+                            <i class="ri-tools-fill text-white"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-800">${t.subject}</p>
+                            <p class="text-sm text-gray-500">${t.classification} • ${formatDate(t.date)}</p>
+                        </div>
+                    </div>
+                    <span class="px-3 py-1 rounded-full text-xs font-medium ${getStatusClass(t.status)}">${getStatusText(t.status)}</span>
+                </div>
+            `).join('');
+
+            // Category List
+            const categoryContainer = document.getElementById('categoryList');
+            const categoryCounts = {};
+            tickets.forEach(t => {
+                categoryCounts[t.classification] = (categoryCounts[t.classification] || 0) + 1;
+            });
+            
+            categoryContainer.innerHTML = Object.entries(categoryCounts).map(([cat, count]) => `
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <span class="text-sm text-gray-700">${cat}</span>
+                    <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium">${count}</span>
+                </div>
+            `).join('');
+        }
+
+        // Render Tickets Table
+        function renderTickets() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const filterClass = document.getElementById('filterClassification').value;
+            const filterStatus = document.getElementById('filterStatus').value;
+
+            const filtered = tickets.filter(t => {
+                const matchSearch = t.subject.toLowerCase().includes(search) || t.items.toLowerCase().includes(search);
+                const matchClass = !filterClass || t.classification === filterClass;
+                const matchStatus = !filterStatus || t.status === filterStatus;
+                return matchSearch && matchClass && matchStatus;
+            });
+
+            document.getElementById('ticketsTable').innerHTML = filtered.map(t => `
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="px-6 py-4 text-sm text-gray-600">${formatDate(t.date)}</td>
+                    <td class="px-6 py-4">
+                        <span class="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">${t.classification}</span>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-800 font-medium">${t.subject}</td>
+                    <td class="px-6 py-4 text-sm text-gray-600">${t.items}</td>
+                    <td class="px-6 py-4">
+                        <span class="px-3 py-1 rounded-full text-xs font-medium ${getStatusClass(t.status)}">${getStatusText(t.status)}</span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <button onclick="showTicketDetail(${t.id})" class="text-blue-600 hover:text-blue-800 mr-3">
+                            <i class="ri-eye-line"></i>
+                        </button>
+                        <button onclick="editTicket(${t.id})" class="text-gray-600 hover:text-gray-800">
+                            <i class="ri-edit-line"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Render Categories Page
+        function renderCategories() {
+            const container = document.getElementById('categoriesGrid');
+            container.innerHTML = Object.entries(categories).map(([cat, subs]) => `
+                <div class="bg-white rounded-xl shadow-sm p-6 card-hover">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center ${getClassColor(cat)}">
+                            <i class="ri-folder-category-fill text-white"></i>
+                        </div>
+                        <h4 class="font-semibold text-gray-800">${cat}</h4>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        ${subs.map(s => `<span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs">${s}</span>`).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Render Reports
+        function renderReports() {
+            const categoryCounts = {};
+            const monthlyCounts = {};
+            
+            tickets.forEach(t => {
+                categoryCounts[t.classification] = (categoryCounts[t.classification] || 0) + 1;
+                const month = t.date.substring(0, 7);
+                monthlyCounts[month] = (monthlyCounts[month] || 0) + 1;
+            });
+
+            const maxCat = Math.max(...Object.values(categoryCounts));
+            document.getElementById('categoryStats').innerHTML = Object.entries(categoryCounts).map(([cat, count]) => `
+                <div>
+                    <div class="flex justify-between text-sm mb-1">
+                        <span class="text-gray-700">${cat}</span>
+                        <span class="text-gray-500">${count} tickets</span>
+                    </div>
+                    <div class="h-3 bg-gray-100 rounded-full overflow-hidden">
+                        <div class="h-full gradient-bg rounded-full" style="width: ${(count / maxCat) * 100}%"></div>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('monthlyStats').innerHTML = Object.entries(monthlyCounts).map(([month, count]) => `
+                <div class="flex items-center gap-4">
+                    <div class="w-24 text-sm text-gray-600">${formatMonth(month)}</div>
+                    <div class="flex-1 h-8 bg-gray-100 rounded-lg overflow-hidden flex items-center">
+                        <div class="h-full gradient-bg flex items-center justify-center text-white text-sm font-medium" style="width: ${(count / Math.max(...Object.values(monthlyCounts))) * 100}%">${count}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Show Ticket Detail
+        function showTicketDetail(id) {
+            currentTicketId = id;
+            const ticket = tickets.find(t => t.id === id);
+            if(!ticket) return;
+
+            document.getElementById('ticketDetailContent').innerHTML = `
+                <div class="space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-lg flex items-center justify-center ${getClassColor(ticket.classification)}">
+                            <i class="ri-ticket-fill text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-gray-800">${ticket.subject}</p>
+                            <p class="text-sm text-gray-500">Ticket #${ticket.id}</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 pt-4 border-t">
+                        <div>
+                            <p class="text-xs text-gray-500 mb-1">Data</p>
+                            <p class="font-medium">${formatDate(ticket.date)}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500 mb-1">Status</p>
+                            <span class="px-3 py-1 rounded-full text-xs font-medium ${getStatusClass(ticket.status)}">${getStatusText(ticket.status)}</span>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500 mb-1">Classificação</p>
+                            <p class="font-medium">${ticket.classification}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500 mb-1">Solicitante</p>
+                            <p class="font-medium">Karen Klein</p>
+                        </div>
+                    </div>
+                    <div class="pt-4 border-t">
+                        <p class="text-xs text-gray-500 mb-1">Itens de Classificação</p>
+                        <p class="font-medium">${ticket.items}</p>
+                    </div>
+                </div>
+            `;
+            openModal('detailModal');
+        }
+
+        // Save New Ticket
+        function saveTicket() {
+            const date = document.getElementById('ticketDate').value;
+            const classification = document.getElementById('ticketClassification').value;
+            const subject = document.getElementById('ticketSubject').value;
+            const items = document.getElementById('ticketItems').value;
+            const requester = document.getElementById('ticketRequester').value;
+
+            if(!date || !classification || !subject) {
+                alert('Por favor, preencha os campos obrigatórios.');
+                return;
+            }
+
+            const newTicket = {
+                id: tickets.length + 1,
+                date,
+                classification,
+                subject,
+                items: items || 'Não especificado',
+                status: 'pendente'
+            };
+
+            tickets.push(newTicket);
+            closeModal('ticketModal');
+            renderDashboard();
+            renderTickets();
+            renderReports();
+            
+            // Show success message
+            alert('Ticket criado com sucesso!');
+            
+            // Reset form
+            document.getElementById('ticketClassification').value = '';
+            document.getElementById('ticketSubject').value = '';
+            document.getElementById('ticketItems').value = '';
+            updateSubcategories();
+        }
+
+        // Update Ticket Status
+        function updateTicketStatus() {
+            const ticket = tickets.find(t => t.id === currentTicketId);
+            if(!ticket) return;
+
+            const statuses = ['pendente', 'em-andamento', 'concluido'];
+            const currentIndex = statuses.indexOf(ticket.status);
+            ticket.status = statuses[(currentIndex + 1) % statuses.length];
+
+            closeModal('detailModal');
+            renderDashboard();
+            renderTickets();
+            renderReports();
+        }
+
+        // Edit Ticket
+        function editTicket(id) {
+            const ticket = tickets.find(t => t.id === id);
+            if(!ticket) return;
+
+            document.getElementById('ticketDate').value = ticket.date;
+            document.getElementById('ticketClassification').value = ticket.classification;
+            updateSubcategories();
+            document.getElementById('ticketSubject').value = ticket.subject;
+            document.getElementById('ticketItems').value = ticket.items;
+            
+            openModal('ticketModal');
+        }
+
+        // Helper Functions
+        function formatDate(dateStr) {
+            const [year, month, day] = dateStr.split('-');
+            return `${day}/${month}/${year.substring(2)}`;
+        }
+
+        function formatMonth(monthStr) {
+            const [year, month] = monthStr.split('-');
+            const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+            return `${months[parseInt(month) - 1]}/${year.substring(2)}`;
+        }
+
+        function getStatusClass(status) {
+            const classes = {
+                'pendente': 'status-pendente',
+                'em-andamento': 'status-em-andamento',
+                'concluido': 'status-concluido'
+            };
+            return classes[status] || 'status-pendente';
+        }
+
+        function getStatusText(status) {
+            const texts = {
+                'pendente': 'Pendente',
+                'em-andamento': 'Em Andamento',
+                'concluido': 'Concluído'
+            };
+            return texts[status] || status;
+        }
+
+        function getClassColor(classification) {
+            const colors = {
+                'Consertos': 'bg-blue-500',
+                'Instalação': 'bg-green-500',
+                'Hidráulica': 'bg-yellow-500',
+                'Lâmpadas Queimadas': 'bg-purple-500',
+                'Instalação de Luminária': 'bg-pink-500',
+                'Serviço de Limpeza': 'bg-cyan-500',
+                'Serviço de Pintura': 'bg-orange-500'
+            };
+            return colors[classification] || 'bg-gray-500';
+        }
+
+        // Event Listeners for filters
+        document.getElementById('searchInput').addEventListener('input', renderTickets);
+        document.getElementById('filterClassification').addEventListener('change', renderTickets);
+        document.getElementById('filterStatus').addEventListener('change', renderTickets);
+    </script>
+</body>
+</html>
+
